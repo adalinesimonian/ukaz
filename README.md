@@ -1,4 +1,4 @@
-# ![ukaz](ukaz-github-header.png)
+# [![ukaz](ukaz-github-header.png)](https://github.com/vsimonian/ukaz)
 
 Next-generation command line parser for Node.js
 
