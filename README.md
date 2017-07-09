@@ -1,4 +1,4 @@
-# ![ukaz](ukaz-logo@100px.png)
+# ![ukaz](ukaz-github-header.png)
 
 Next-generation command line parser for Node.js
 
