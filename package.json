@@ -1,0 +1,44 @@
+{
+  "name": "ukaz",
+  "version": "0.1.0",
+  "description": "Next-generation command line parser",
+  "main": "index.js",
+  "scripts": {
+    "test": "xo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vsimonian/ukaz.git"
+  },
+  "keywords": [
+    "cli",
+    "cmd",
+    "command",
+    "line",
+    "parser",
+    "application",
+    "commander"
+  ],
+  "author": "Vartan Christopher Simonian <vsimonianpress@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vsimonian/ukaz/issues"
+  },
+  "homepage": "https://github.com/vsimonian/ukaz#readme",
+  "engineStrict": true,
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "devDependencies": {
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-node": "^5.1.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "xo": "^0.18.2"
+  },
+  "xo": {
+    "extends": "standard",
+    "rules": {
+      "unicorn/no-process-exit": "off"
+    }
+  }
+}
