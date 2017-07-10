@@ -131,10 +131,13 @@ class Command {
    * Adds a flag that the command should accept.
    * @param {string} flag The flag definition, e.g. `-f, --force`
    * @param {string} description The flag's description
+   * @param {object} options
+   * @param {string} options.variableName The name to use for the variable that
+   * will contain the flag's value.
    * @returns {Command}
    */
-  flag (flag, description) {
-    this._flags.push(new Flag(flag, description))
+  flag (flag, description, { variableName } = {}) {
+    this._flags.push(new Flag(flag, description, { variableName }))
     return this
   }
 
@@ -146,12 +149,19 @@ class Command {
    * @param {string} options.default Default value for the option, if omitted.
    * @param {string} options.multi Whether or not the option accepts multiple
    * values.
+   * @param {string} options.variableName The name to use for the variable that
+   * will contain the option's value.
    * @returns {Command}
    */
-  option (option, description, {default: defaultValue, multi = false} = {}) {
+  option (option, description, {
+    default: defaultValue,
+    multi = false,
+    variableName
+  } = {}) {
     this._options.push(new Option(option, description, {
       default: defaultValue,
-      multi
+      multi,
+      variableName
     }))
     return this
   }
@@ -167,11 +177,18 @@ class Command {
     return this
   }
 
-  /** Adds a help flag that shows usage information for the command. */
-  helpFlag () {
-    return this.flag('-h,--help', 'Shows usage information.')
+  /**
+   * Adds a help flag that shows usage information for the command.
+   * @param {string} definition Optional. Sets a different definition for the
+   * help flag instead of the default `-h,--help`.
+   * */
+  helpFlag (definition = '-h,--help') {
+    const help = Symbol('help')
+    return this.flag(definition, 'Shows usage information.', {
+      variableName: help
+    })
       .handler(ctx => {
-        if (ctx.flags.help) {
+        if (ctx.flags[help]) {
           this.usage()
           return false
         }

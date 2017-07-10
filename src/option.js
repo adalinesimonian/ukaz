@@ -7,7 +7,7 @@ class Option {
    * `-o|--option <value>`
    */
   constructor (definition, description, {
-    default: defaultValue, multi = false
+    default: defaultValue, multi = false, variableName
   } = {}) {
     const optionNameRegex = /-([^-\s|,])|--([^\s|,]+)/g
     const optionValueNameRegex = /\[([^[\]]*)\]|<([^<>]*)>|(\S+)/
@@ -44,9 +44,9 @@ class Option {
 
     this._shortNames = shortNames
     this._longNames = longNames
-    this._variableName = longNames.length > 0
+    this._variableName = variableName || (longNames.length > 0
       ? Utilities.camelCase(longNames[0])
-      : shortNames[0]
+      : shortNames[0])
     this._valueName = valueName
     this._description = description
     this._valueRequired = valueRequired

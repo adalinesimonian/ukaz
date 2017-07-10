@@ -5,7 +5,7 @@ class Flag {
   /**
    * Creates a new flag from a flag definition, e.g. `-f|--flag`
    */
-  constructor (definition, description) {
+  constructor (definition, description, { variableName } = {}) {
     const flagNameRegex = /-([^-\s|,])|--([^\s|,]+)/g
 
     const shortNames = []
@@ -35,9 +35,9 @@ class Flag {
 
     this._shortNames = shortNames
     this._longNames = longNames
-    this._variableName = longNames.length > 0
+    this._variableName = variableName || (longNames.length > 0
       ? Utilities.camelCase(longNames[0])
-      : shortNames[0]
+      : shortNames[0])
     this._description = description
     this._multi = false
   }
