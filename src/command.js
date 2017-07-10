@@ -171,7 +171,7 @@ class Command {
   helpFlag () {
     return this.flag('-h,--help', 'Shows usage information.')
       .handler(ctx => {
-        if (ctx.args.help) {
+        if (ctx.flags.help) {
           this.usage()
           return false
         }
@@ -182,15 +182,6 @@ class Command {
   /** Adds a validation handler that validates the arguments */
   validate () {
     return this.handler(ctx => {
-      ctx._command._options.forEach(opt => {
-        if (opt._required && typeof ctx.args[opt._variableName] === 'undefined') {
-          throw new CliParsingError(
-            `Missing required option '${
-            opt._longNames.concat(opt._shortNames)[0]}'`
-          )
-        }
-      })
-
       ctx._command._arguments &&
         ctx._command._arguments._arguments.forEach(arg => {
           if (arg._required && typeof ctx.args[arg._variableName] === 'undefined') {
@@ -292,18 +283,17 @@ class Command {
     argv = argv.slice()
     if (argv.length === 0) {
       return this._handlers.length > 0
-        ? this._execute(new Context(this, argv.slice(1)))
+        ? this._execute(new Context(this, argv))
         : this.usage()
     }
     const matchingCommand = this._commands.find(c =>
-        c._name === argv[1] || c._aliases.some(a => a === argv[1])
-      )
+      c._name === argv[0] || c._aliases.some(a => a === argv[0])
+    )
     if (matchingCommand) {
-      argv.splice(0, 1)
-      return matchingCommand.run(argv)
+      return matchingCommand.run(argv.slice(1))
     }
     return this._handlers.length > 0
-          ? this._execute(new Context(this, argv.slice(1)))
+          ? this._execute(new Context(this, argv))
           : this.usage()
   }
 }

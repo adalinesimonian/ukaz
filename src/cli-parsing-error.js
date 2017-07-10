@@ -4,7 +4,7 @@
  */
 class CliParsingError extends Error {
   constructor () {
-    super()
+    super(...arguments)
     this.name = 'CliParsingError'
   }
  }

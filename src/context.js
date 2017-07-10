@@ -12,6 +12,8 @@ class Context {
    */
   constructor (command, argv) {
     const optMap = new Map()
+    const flagValues = new Map()
+    const optValues = new Map()
     const argValues = new Map()
     command._options.concat(command._flags).forEach(opt => {
       opt._shortNames.forEach(name => optMap.set(name, opt))
@@ -32,9 +34,9 @@ class Context {
         }
         if (arg.length > 1 && arg.startsWith('-')) {
           if (currentOpt) {
-            if (currentOpt._required) {
+            if (currentOpt._valueRequired) {
               throw new CliParsingError(
-                `Value required for option ${currentOptName}`
+                `Value required for option '${currentOptName}'`
               )
             } else {
               currentOpt = null
@@ -47,7 +49,7 @@ class Context {
           optNames.forEach(optName => {
             const opt = optMap.get(optName)
             if (opt instanceof Flag) {
-              argValues.set(opt._variableName, true)
+              flagValues.set(opt._variableName, true)
             } else if (opt instanceof Option) {
               if (currentOpt) {
                 throw new CliParsingError(
@@ -69,11 +71,11 @@ class Context {
           let values = argValues.get(currentOpt._variableName)
           if (!values) {
             values = []
-            argValues.set(currentOpt._variableName, values)
+            optValues.set(currentOpt._variableName, values)
           }
           values.push(arg)
         } else {
-          argValues.set(currentOpt._variableName, arg)
+          optValues.set(currentOpt._variableName, arg)
         }
         currentOpt = null
         currentOptName = null
@@ -126,19 +128,52 @@ class Context {
       }
     })
 
-    if (currentOpt) {
+    if (currentOpt && currentOpt._valueRequired) {
       throw new CliParsingError(
-        `Missing value for option '${currentOptName}'`
+        `Value required for option '${currentOptName}'`
       )
     }
 
+    this._flags = command._flags.reduce((obj, flag) => {
+      obj[flag._variableName] = flagValues.has(flag._variableName)
+      return obj
+    }, Object.create(null))
+
+    this._options = command._options.reduce((obj, opt) => {
+      let value = optValues.get(opt._variableName)
+      let present = typeof value !== 'undefined'
+      obj[opt._variableName] = {
+        present,
+        value: present ? value : opt._default
+      }
+      return obj
+    }, Object.create(null))
+
+    if (command._arguments) {
+      this._args = command._arguments._arguments.reduce((obj, arg) => {
+        if (arg instanceof Argument) {
+          let value = argValues.get(arg._variableName)
+          let present = typeof value !== 'undefined'
+          obj[arg._variableName] = {
+            present,
+            value
+          }
+        }
+        return obj
+      }, Object.create(null))
+    } else {
+      this._args = {}
+    }
+
     this._command = command
-    this._args = Object.create(null)
-    Array.from(argValues).forEach(([varName, value]) => {
-      this._args[varName] = value
-    })
+    Object.freeze(this._flags)
+    Object.freeze(this._options)
     Object.freeze(this._args)
   }
+
+  get flags () { return this._flags }
+
+  get options () { return this._options }
 
   get args () { return this._args }
 }

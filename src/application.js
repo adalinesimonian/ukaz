@@ -24,7 +24,7 @@ class Application extends Command {
     if (argv.length > 1 && argv[0] === process.execPath) {
       argv.splice(0, 1)
     }
-    if (argv.length > 1 && argv[0] === process.mainModule.filename) {
+    if (argv.length > 0 && argv[0] === process.mainModule.filename) {
       argv.splice(0, 1)
     }
     return super.run(argv)
