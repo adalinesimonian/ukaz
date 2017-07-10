@@ -2,6 +2,12 @@
 
 Next-generation command line parser for Node.js
 
+### Name
+
+Pronounced /ǔːkaːz/ (oo-KAHZ)
+
+Means "command" in Slovenian, or "decree" in Russian.
+
 ## Usage
 
 > **API is currently under development and is therefore unstable.
