@@ -13,14 +13,20 @@ const ukaz = require('ukaz')
 const app = new ukaz.Application('Hello world CLI app')
   .helpFlag() // adds -h, --help
   .validate() // ensures all required arguments are given before running handler
-  .flag('-s|--shout', 'Shouts hello world instead of being polite')
-  .option('-n, --name [name]', 'A name to say hello to instead of "world"')
-  .handler(async ctx => { // executed when the application runs
-    let name = ctx.args.name || 'world'
-    if (ctx.args.shout) {
+  .arguments('[phrases...]')
+  .flag('-s|--shout', 'Shouts hello instead of being polite')
+  .option('-n, --name <name>', 'A name to say hello to instead of "world"', {
+    default: 'world'
+  })
+  .handler(async ({flags, options, args}) => { // executed when the app runs
+    let name = options.name.value
+    if (flags.shout) {
       console.log(`HELLO, ${name.toUpperCase()}!!!`)
     } else {
       console.log(`Hello, ${name}!`)
+    }
+    if (args.phrases.present) {
+      args.phrases.value.forEach(phrase => console.log(phrase))
     }
   })
 
