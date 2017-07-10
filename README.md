@@ -40,6 +40,18 @@ app.run(process.argv)
   })
 ```
 
-## License
+## Another CLI app framework? But we already have [other framework]!
+
+There are some great toolkits out there already, such as [commander.js](https://github.com/tj/commander.js) and [nash](https://github.com/scottcorgan/nash). But most CLI frameworks for Node.js are not currently taking advantage of Node's support for `async`/`await` which can make your CLI app more robust.
+
+ukaz intends to correct that:
+
+- **All handlers are `async` functions.**
+- Use `async` support to easily write synchronous or asynchronous code without unnecessary boilerplate.
+- All errors are safely bubbled up to your error-handling code when you call `app.run(...)`. Handle errors your way!
+- You terminate the process on your own terms. No surprise `process.exit(...)` calls.
+- Chain handlers together, much like middleware. Useful for larger, more involved applications.
+
+## Licence
 
 MIT
