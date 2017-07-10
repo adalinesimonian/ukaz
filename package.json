@@ -16,6 +16,7 @@
     "command",
     "line",
     "parser",
+    "framework",
     "application",
     "commander"
   ],
