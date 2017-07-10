@@ -8,6 +8,12 @@ Pronounced /ǔːkaːz/ (oo-KAHZ)
 
 Means "command" in Slovenian, or "decree" in Russian.
 
+## Get started
+
+```
+$ npm i ukaz
+```
+
 ## Usage
 
 > **API is currently under development and is therefore unstable.
