@@ -298,20 +298,17 @@ class Command {
    */
   async run (argv) {
     argv = argv.slice()
-    if (argv.length === 0) {
-      return this._handlers.length > 0
-        ? this._execute(new Context(this, argv))
-        : this.usage()
-    }
-    const matchingCommand = this._commands.find(c =>
-      c._name === argv[0] || c._aliases.some(a => a === argv[0])
-    )
-    if (matchingCommand) {
-      return matchingCommand.run(argv.slice(1))
+    if (argv.length > 0) {
+      const matchingCommand = this._commands.find(c =>
+        c._name === argv[0] || c._aliases.some(a => a === argv[0])
+      )
+      if (matchingCommand) {
+        return matchingCommand.run(argv.slice(1))
+      }
     }
     return this._handlers.length > 0
-          ? this._execute(new Context(this, argv))
-          : this.usage()
+      ? this._execute(new Context(this, argv))
+      : this.usage()
   }
 }
 
