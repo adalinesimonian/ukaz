@@ -1,6 +1,6 @@
 {
   "name": "ukaz",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Next-generation command line parser",
   "main": "src/index.js",
   "scripts": {
@@ -31,7 +31,7 @@
     "node": ">=8.0.0"
   },
   "devDependencies": {
-    "ava": "^0.20.0",
+    "ava": "^0.21.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-standard": "^3.0.1",
