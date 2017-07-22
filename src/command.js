@@ -136,8 +136,8 @@ class Command {
    * will contain the flag's value.
    * @returns {Command}
    */
-  flag (flag, description, { variableName } = {}) {
-    this._flags.push(new Flag(flag, description, { variableName }))
+  flag (flag, description, {variableName} = {}) {
+    this._flags.push(new Flag(flag, description, {variableName}))
     return this
   }
 

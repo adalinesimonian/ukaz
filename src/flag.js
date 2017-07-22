@@ -5,7 +5,7 @@ class Flag {
   /**
    * Creates a new flag from a flag definition, e.g. `-f|--flag`
    */
-  constructor (definition, description, { variableName } = {}) {
+  constructor (definition, description, {variableName} = {}) {
     const flagNameRegex = /-([^-\s|,])|--([^\s|,]+)/g
 
     const shortNames = []

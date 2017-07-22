@@ -140,8 +140,8 @@ class Context {
     }, Object.create(null))
 
     this._options = command._options.reduce((obj, opt) => {
-      let value = optValues.get(opt._variableName)
-      let present = typeof value !== 'undefined'
+      const value = optValues.get(opt._variableName)
+      const present = typeof value !== 'undefined'
       obj[opt._variableName] = {
         present,
         value: present ? value : opt._default
@@ -152,8 +152,8 @@ class Context {
     if (command._arguments) {
       this._args = command._arguments._arguments.reduce((obj, arg) => {
         if (arg instanceof Argument) {
-          let value = argValues.get(arg._variableName)
-          let present = typeof value !== 'undefined'
+          const value = argValues.get(arg._variableName)
+          const present = typeof value !== 'undefined'
           obj[arg._variableName] = {
             present,
             value
