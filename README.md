@@ -20,7 +20,7 @@ $ npm i ukaz
 > Changes may be made at any time.**
 
 ```javascript
-const ukaz = require('ukaz')
+import * as ukaz from 'ukaz'
 
 const app = new ukaz.Application('Hello world CLI app')
   .helpFlag() // adds -h, --help
@@ -30,24 +30,25 @@ const app = new ukaz.Application('Hello world CLI app')
   .option('-n, --name <name>', 'A name to say hello to instead of "world"', {
     default: 'world'
   })
-  .handler(async ({flags, options, args}) => { // executed when the app runs
+  .handler(async ({ flags, options, args }) => { // executed when the app runs
     let name = options.name.value
     if (flags.shout) {
       console.log(`HELLO, ${name.toUpperCase()}!!!`)
     } else {
       console.log(`Hello, ${name}!`)
     }
+
     if (args.phrases.present) {
       args.phrases.value.forEach(phrase => console.log(phrase))
     }
   })
 
 app.run(process.argv)
-  .catch(err => { // catches any errors encountered during execution
-    if (err instanceof ukaz.CliParsingError) { // bad arguments or user input
-      console.error(`Error: ${err.message}`)
+  .catch(error => { // catches any errors encountered during execution
+    if (error instanceof ukaz.CliParsingError) { // bad arguments or user input
+      console.error(`Error: ${error.message}`)
     } else { // other application error
-      console.error(err)
+      console.error(error)
     }
   })
 ```
