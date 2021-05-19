@@ -1,6 +1,15 @@
 {
-  "extends": "standard",
+  "extends": [
+    "xo",
+    "standard"
+  ],
+  "plugins": [
+    "unicorn"
+  ],
   "rules": {
-    "unicorn/no-process-exit": "off"
+    "unicorn/no-array-reduce": "off",
+    "unicorn/no-process-exit": "off",
+    "complexity": "off",
+    "max-depth": "off"
   }
 }

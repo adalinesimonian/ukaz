@@ -1,13 +1,13 @@
-const Argument = require('./argument')
+import Argument from './argument.js'
 
 /** Represents a set of command line arguments */
-class ArgumentSet {
+export default class ArgumentSet {
   /**
    * Creates an argument set from a definition, e.g.
    * `<arg1>..<arg2> [arg3...]`
    */
   constructor (definition) {
-    const argumentRegex = /<[^<>]+>|\[[^[\]]+\]/g
+    const argumentRegex = /<[^<>]+>|\[[^[\]]+]/g
 
     const args = []
 
@@ -20,11 +20,11 @@ class ArgumentSet {
       if (lastArg && lastArg._variadic) {
         throw new Error(`Variadic argument must come last: '${definition}'`)
       }
+
       const arg = new Argument(argumentMatch[0])
       if (lastArgMatch) {
         const delimStart = lastArgMatch.index + lastArgMatch[0].length
-        const delimLength = argumentMatch.index - delimStart
-        const delimiter = definition.substr(delimStart, delimLength)
+        const delimiter = definition.slice(delimStart, argumentMatch.index)
         if (/^\s+$/.test(delimiter)) {
           args.push(' ')
         } else {
@@ -33,20 +33,24 @@ class ArgumentSet {
               'Arguments separated with custom delimiters must both be' +
               `required or both be optional: ${definition}`)
           }
+
           args.push(delimiter)
         }
       }
+
       if (variadicExists && arg._variadic) {
         throw new Error(
           `Argument set can only have one variadic argument: '${definition}'`
         )
       }
+
       if (argMap.has(arg._variableName)) {
         throw new Error(
           `Argument set contains duplicate argument '${arg._name}': '${
             definition}'`
         )
       }
+
       args.push(arg)
       argMap.set(arg._variableName, true)
       lastArg = arg
@@ -61,5 +65,3 @@ class ArgumentSet {
     return this._arguments.reduce((args, arg) => args + arg, '')
   }
 }
-
-module.exports = ArgumentSet

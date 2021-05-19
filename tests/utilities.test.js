@@ -1,5 +1,5 @@
 import test from 'ava'
-import Utilities from '../src/utilities'
+import * as Utilities from '../src/utilities.js'
 
 test('should camelCase hyphenated strings', t => {
   t.is(

@@ -3,6 +3,7 @@
   "version": "0.2.3",
   "description": "Next-generation command line parser",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "test": "xo && ava"
   },
@@ -28,22 +29,21 @@
   "homepage": "https://github.com/adalinesimonian/ukaz#readme",
   "engineStrict": true,
   "engines": {
-    "node": ">=8.0.0"
-  },
-  "dependencies": {
-    "fs-extra": "^4.0.0"
+    "node": ">=12.20"
   },
   "devDependencies": {
-    "ava": "^0.21.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-node": "^5.1.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "xo": "^0.18.2"
+    "ava": "^3.15.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-node": "^11.1.0",
+    "xo": "^0.40.1"
   },
   "xo": {
     "extends": "standard",
     "rules": {
-      "unicorn/no-process-exit": "off"
+      "unicorn/no-array-reduce": "off",
+      "unicorn/no-process-exit": "off",
+      "complexity": "off",
+      "max-depth": "off"
     }
   }
 }

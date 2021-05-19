@@ -1,12 +1,12 @@
-const path = require('path')
-const fs = require('fs-extra')
-const Command = require('./command')
+import path from 'node:path'
+import Command from './command.js'
 
 /**
  * Represents a command line application
  * @augments Command
  * */
-class Application extends Command {
+// eslint-disable-next-line unicorn/prevent-abbreviations
+export default class Application extends Command {
   /**
    * Creates a new application with the given description.
    * @param {string} description The description of the application
@@ -21,15 +21,11 @@ class Application extends Command {
    * @async
    */
   async run (argv) {
-    argv = argv.slice()
+    argv = [...argv]
     if (argv.length > 1 && argv[0] === process.execPath) {
-      argv.splice(0, 1)
+      argv.splice(0, 2)
     }
-    if (argv.length > 0 && await fs.realpath(argv[0]) === process.mainModule.filename) {
-      argv.splice(0, 1)
-    }
+
     return super.run(argv)
   }
 }
-
-module.exports = Application

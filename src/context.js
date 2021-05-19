@@ -1,10 +1,10 @@
-const Flag = require('./flag')
-const Option = require('./option')
-const Argument = require('./argument')
-const CliParsingError = require('./cli-parsing-error')
+import Flag from './flag.js'
+import Option from './option.js'
+import Argument from './argument.js'
+import CliParsingError from './cli-parsing-error.js'
 
 /** Represents the context of a running command. */
-class Context {
+export default class Context {
   /**
    * Creates a new context object.
    * @param {Command} command The currently executing command.
@@ -15,23 +15,25 @@ class Context {
     const flagValues = new Map()
     const optValues = new Map()
     const argValues = new Map()
-    command._options.concat(command._flags).forEach(opt => {
-      opt._shortNames.forEach(name => optMap.set(name, opt))
-      opt._longNames.forEach(name => optMap.set(name, opt))
-    })
+    for (const opt of [...command._options, ...command._flags]) {
+      for (const name of opt._shortNames) optMap.set(name, opt)
+      for (const name of opt._longNames) optMap.set(name, opt)
+    }
+
     let argumentsOnly = false
     let currentOpt = null
     let currentOptName = null
     const expectedArgs = command._arguments
-      ? command._arguments._arguments.slice()
+      ? [...command._arguments._arguments]
       : []
     let currentVariadicArg = null
-    argv.forEach(arg => {
+    for (const arg of argv) {
       if (!argumentsOnly) {
         if (arg === '--') {
           argumentsOnly = true
-          return
+          continue
         }
+
         if (arg.length > 1 && arg.startsWith('-')) {
           if (currentOpt) {
             if (currentOpt._valueRequired) {
@@ -43,10 +45,11 @@ class Context {
               currentOptName = null
             }
           }
+
           const optNames = arg.startsWith('--')
-            ? [arg.substr(2)]
-            : arg.substr(1).split('')
-          optNames.forEach(optName => {
+            ? [arg.slice(2)]
+            : arg.slice(1).split('')
+          for (const optName of optNames) {
             const opt = optMap.get(optName)
             if (opt instanceof Flag) {
               flagValues.set(opt._variableName, true)
@@ -57,15 +60,18 @@ class Context {
                   `values: '${optName}', '${currentOptName}'`
                 )
               }
+
               currentOpt = opt
               currentOptName = arg
             } else {
               throw new CliParsingError(`Unrecognised option '${arg}'`)
             }
-          })
-          return
+          }
+
+          continue
         }
       }
+
       if (currentOpt) {
         if (currentOpt._multi) {
           let values = argValues.get(currentOpt._variableName)
@@ -73,19 +79,22 @@ class Context {
             values = []
             optValues.set(currentOpt._variableName, values)
           }
+
           values.push(arg)
         } else {
           optValues.set(currentOpt._variableName, arg)
         }
+
         currentOpt = null
         currentOptName = null
-        return
+        continue
       }
+
       if (currentVariadicArg) {
         argValues
           .get(currentVariadicArg._variableName)
           .push(arg)
-        return
+        continue
       }
 
       const currentArgSet = []
@@ -96,11 +105,13 @@ class Context {
       ) {
         currentArgSet.push(...expectedArgs.splice(0, 2))
       }
+
       if (!(currentArgSet[currentArgSet.length - 1] instanceof Argument)) {
-        currentArgSet.splice(currentArgSet.length - 1)
+        currentArgSet.splice(-1)
       }
-      const remainingArgSet = currentArgSet.slice()
-      let argFragment = arg.slice()
+
+      const remainingArgSet = [...currentArgSet]
+      let argFragment = [...arg]
       while (typeof remainingArgSet[1] === 'string') {
         const delimStart = argFragment.indexOf(currentArgSet[1])
         if (delimStart === -1) {
@@ -110,23 +121,26 @@ class Context {
             `, received ${arg}`
           )
         }
+
         argValues.set(
           remainingArgSet[0]._variableName,
-          argFragment.substring(0, delimStart)
+          argFragment.slice(0, Math.max(0, delimStart))
         )
         argFragment = argFragment.slice(delimStart + remainingArgSet[1].length)
         remainingArgSet.splice(0, 2)
       }
+
       if (remainingArgSet.length === 0 && argFragment) {
         throw new CliParsingError(`Superfluous argument '${argFragment}'`)
       }
+
       if (remainingArgSet[0]._variadic) {
         currentVariadicArg = remainingArgSet[0]
         argValues.set(remainingArgSet[0]._variableName, [argFragment])
       } else {
         argValues.set(remainingArgSet[0]._variableName, argFragment)
       }
-    })
+    }
 
     if (currentOpt && currentOpt._valueRequired) {
       throw new CliParsingError(
@@ -134,32 +148,33 @@ class Context {
       )
     }
 
-    this._flags = command._flags.reduce((obj, flag) => {
-      obj[flag._variableName] = flagValues.has(flag._variableName)
-      return obj
+    this._flags = command._flags.reduce((object, flag) => {
+      object[flag._variableName] = flagValues.has(flag._variableName)
+      return object
     }, Object.create(null))
 
-    this._options = command._options.reduce((obj, opt) => {
+    this._options = command._options.reduce((object, opt) => {
       const value = optValues.get(opt._variableName)
       const present = typeof value !== 'undefined'
-      obj[opt._variableName] = {
+      object[opt._variableName] = {
         present,
         value: present ? value : opt._default
       }
-      return obj
+      return object
     }, Object.create(null))
 
     if (command._arguments) {
-      this._args = command._arguments._arguments.reduce((obj, arg) => {
+      this._args = command._arguments._arguments.reduce((object, arg) => {
         if (arg instanceof Argument) {
           const value = argValues.get(arg._variableName)
           const present = typeof value !== 'undefined'
-          obj[arg._variableName] = {
+          object[arg._variableName] = {
             present,
             value
           }
         }
-        return obj
+
+        return object
       }, Object.create(null))
     } else {
       this._args = {}
@@ -177,5 +192,3 @@ class Context {
 
   get args () { return this._args }
 }
-
-module.exports = Context

@@ -1,8 +1,8 @@
-const ArgumentSet = require('./argument-set')
-const Flag = require('./flag')
-const Option = require('./option')
-const Context = require('./context')
-const CliParsingError = require('./cli-parsing-error')
+import ArgumentSet from './argument-set.js'
+import Flag from './flag.js'
+import Option from './option.js'
+import Context from './context.js'
+import CliParsingError from './cli-parsing-error.js'
 
 /**
  * A function which initialises properties on a given command.
@@ -18,7 +18,7 @@ const CliParsingError = require('./cli-parsing-error')
  */
 
 /** Represents a single command in the application */
-class Command {
+export default class Command {
   constructor (name, description) {
     /**
      * @type {string}
@@ -103,6 +103,7 @@ class Command {
     if (initialiser) {
       initialiser(command)
     }
+
     return this
   }
 
@@ -136,8 +137,8 @@ class Command {
    * will contain the flag's value.
    * @returns {Command}
    */
-  flag (flag, description, {variableName} = {}) {
-    this._flags.push(new Flag(flag, description, {variableName}))
+  flag (flag, description, { variableName } = {}) {
+    this._flags.push(new Flag(flag, description, { variableName }))
     return this
   }
 
@@ -192,6 +193,7 @@ class Command {
           this.usage()
           return false
         }
+
         return true
       })
   }
@@ -199,14 +201,15 @@ class Command {
   /** Adds a validation handler that validates the arguments */
   validate () {
     return this.handler(ctx => {
-      ctx._command._arguments &&
-        ctx._command._arguments._arguments.forEach(arg => {
+      if (ctx._command._arguments) {
+        for (const arg of ctx._command._arguments._arguments) {
           if (arg._required && typeof ctx.args[arg._variableName] === 'undefined') {
             throw new CliParsingError(
               `Missing required argument '${arg._name}'`
             )
           }
-        })
+        }
+      }
 
       return true
     })
@@ -220,7 +223,8 @@ class Command {
       name = `${parent._name} ${name}`
       parent = parent._parent
     }
-    const flagsAndOptions = this._flags.concat(this._options)
+
+    const flagsAndOptions = [...this._flags, ...this._options]
     if (flagsAndOptions.length > 0 || this._arguments) {
       console.log(
         'Usage: ' +
@@ -236,23 +240,25 @@ class Command {
         console.log('or')
       }
     }
+
     if (this._commands.length > 0) {
       console.log(`Usage: ${name} [command]`)
     }
+
     if (this._aliases.length > 0) {
       console.log(`Aliases: ${this._aliases.join(', ')}`)
     }
+
     this._description && console.log(this._description)
-    const nameWidth = flagsAndOptions
-      .map(opt => opt.toString())
-      .concat(this._commands.map(cmd =>
-        [cmd._name].concat(cmd._aliases).join(', ')
-      ))
+    const nameWidth = [
+      ...flagsAndOptions.map(opt => opt.toString()),
+      ...this._commands.map(cmd => [cmd._name, ...cmd._aliases].join(', '))
+    ]
       .reduce((max, opt) => Math.max(max, opt.toString().length), 0)
     if (flagsAndOptions.length > 0) {
       console.log()
       console.log('Options:')
-      flagsAndOptions.forEach(opt => {
+      for (const opt of flagsAndOptions) {
         console.log(
           '  ' +
           opt.toString().padEnd(nameWidth) +
@@ -260,20 +266,21 @@ class Command {
             ? `  ${opt._description}`
             : '')
         )
-      })
+      }
     }
+
     if (this._commands.length > 0) {
       console.log()
       console.log('Commands:')
-      this._commands.forEach(cmd => {
+      for (const cmd of this._commands) {
         console.log(
           '  ' +
-          [cmd._name].concat(cmd._aliases).join(', ').padEnd(nameWidth) +
+          [cmd._name, ...cmd._aliases].join(', ').padEnd(nameWidth) +
           (cmd._description
             ? `  ${cmd._description}`
             : '')
         )
-      })
+      }
     }
   }
 
@@ -297,19 +304,18 @@ class Command {
    * @async
    */
   async run (argv) {
-    argv = argv.slice()
+    argv = [...argv]
     if (argv.length > 0) {
       const matchingCommand = this._commands.find(c =>
-        c._name === argv[0] || c._aliases.some(a => a === argv[0])
+        c._name === argv[0] || c._aliases.includes(argv[0])
       )
       if (matchingCommand) {
         return matchingCommand.run(argv.slice(1))
       }
     }
+
     return this._handlers.length > 0
       ? this._execute(new Context(this, argv))
       : this.usage()
   }
 }
-
-module.exports = Command

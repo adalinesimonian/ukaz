@@ -1,10 +1,10 @@
-const Utilities = require('./utilities')
+import { camelCase } from './utilities.js'
 
 /** Represents a command line arguments */
 class Argument {
   /** Creates an argument from an argument definition, e.g. `<arg...>` */
   constructor (definition, description) {
-    const argumentRegex = /^<([^<>]+)>$|^\[([^[\]]+)\]$/
+    const argumentRegex = /^<([^<>]+)>$|^\[([^[\]]+)]$/
 
     const argumentMatch = argumentRegex.exec(definition)
 
@@ -22,11 +22,11 @@ class Argument {
 
     if (variadicMatch !== null) {
       variadic = true
-      name = name.substr(0, variadicMatch.index)
+      name = name.slice(0, Math.max(0, variadicMatch.index))
     }
 
     this._name = name
-    this._variableName = Utilities.camelCase(name)
+    this._variableName = camelCase(name)
     this._description = description
     this._variadic = variadic
     this._required = required
@@ -40,4 +40,4 @@ class Argument {
   }
 }
 
-module.exports = Argument
+export default Argument
