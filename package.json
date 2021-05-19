@@ -1,6 +1,6 @@
 {
   "name": "ukaz",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Next-generation command line parser",
   "main": "src/index.js",
   "type": "module",
