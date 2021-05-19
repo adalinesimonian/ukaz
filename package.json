@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vsimonian/ukaz.git"
+    "url": "git+https://github.com/adalinesimonian/ukaz.git"
   },
   "keywords": [
     "cli",
@@ -20,12 +20,12 @@
     "application",
     "commander"
   ],
-  "author": "Vartan Christopher Simonian <vsimonianpress@gmail.com>",
+  "author": "Adaline Valentina Simonian <adalinesimonian@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vsimonian/ukaz/issues"
+    "url": "https://github.com/adalinesimonian/ukaz/issues"
   },
-  "homepage": "https://github.com/vsimonian/ukaz#readme",
+  "homepage": "https://github.com/adalinesimonian/ukaz#readme",
   "engineStrict": true,
   "engines": {
     "node": ">=8.0.0"
